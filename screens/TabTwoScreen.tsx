@@ -4,7 +4,8 @@ import {StyleSheet} from 'react-native';
 import Settings from '../store/settings';
 
 import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+import { View } from '../components/Themed';
+import { TextInput } from 'react-native-gesture-handler';
 
 export default function TabTwoScreen() {
 
@@ -16,9 +17,11 @@ export default function TabTwoScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{state.text}</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabTwoScreen.tsx" />
+      <TextInput 
+        style={styles.title} 
+        value={state.text}
+        onChangeText = {text => Settings.next({text})}
+        ></TextInput>
     </View>
   );
 }
