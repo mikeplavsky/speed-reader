@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Clipboard} from 'react-native';
+import {Input, Button} from 'react-native-elements';
 
 import Settings from '../store/settings';
 
@@ -15,13 +16,28 @@ export default function TabTwoScreen() {
     Settings.subscribe(setState);
   });
 
+  const getText = async () => {
+    const text = await Clipboard.getString();
+    Settings.next({ text });
+  }
+
   return (
     <View style={styles.container}>
-      <TextInput 
-        style={styles.title} 
+
+      <Input label="Speed:"></Input>
+      <Input label="Font:"></Input>
+
+      <Input 
+        label="Text:"
         value={state.text}
         onChangeText = {text => Settings.next({text})}
-        ></TextInput>
+      ></Input>
+      
+      <Button 
+        title="Paste" 
+        type="clear"
+        onPress={getText}></Button>
+
     </View>
   );
 }
@@ -29,12 +45,14 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'stretch',
+    justifyContent: 'flex-start',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+    height: 100,
+    width: 300
   },
   separator: {
     marginVertical: 30,

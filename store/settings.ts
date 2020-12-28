@@ -1,7 +1,7 @@
 import {BehaviorSubject} from 'rxjs'; 
 
 const Settings = new BehaviorSubject({
-    text: "init value"
+    text: ""
 }); 
 
 export default Settings;
