@@ -4,10 +4,19 @@ import { StyleSheet } from 'react-native';
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 
+import Settings from '../store/settings';
+
 export default function TabOneScreen() {
+
+  const [state, setState] = React.useState({text:''});
+
+  React.useLayoutEffect(() => {
+    Settings.subscribe(setState);
+  });
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Text</Text>
+      <Text style={styles.title}>{state.text}</Text>
     </View>
   );
 }

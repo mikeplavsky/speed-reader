@@ -1,13 +1,22 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
+
+import Settings from '../store/settings';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 
 export default function TabTwoScreen() {
+
+  const [state, setState] = React.useState({text:''});
+
+  React.useLayoutEffect(() => {
+    Settings.subscribe(setState);
+  });
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
+      <Text style={styles.title}>{state.text}</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <EditScreenInfo path="/screens/TabTwoScreen.tsx" />
     </View>
