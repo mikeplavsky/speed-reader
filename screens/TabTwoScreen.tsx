@@ -27,17 +27,18 @@ export default function TabTwoScreen() {
       <Input label="Speed:"></Input>
       <Input label="Font:"></Input>
 
-      <Input 
-        label="Text:"
-        value={state.text}
-        onChangeText = {text => Settings.next({text})}
-      ></Input>
-      
       <Button 
         title="Paste" 
         type="clear"
         onPress={getText}></Button>
 
+      <Input 
+        value={state.text}
+        onChangeText = {text => Settings.next({text})}
+        multiline
+        disabled
+      ></Input>
+      
     </View>
   );
 }
