@@ -8,15 +8,18 @@ import Settings from '../store/settings';
 
 export default function TabOneScreen() {
 
-  const [state, setState] = React.useState({text:''});
+  const [state, setState] = React.useState({
+    words: [""], idx: 0});
 
-  React.useLayoutEffect(() => {
-    Settings.subscribe(setState);
-  });
+  const [text, setText] = React.useState({text:''});
+
+  React.useEffect(() => {
+    Settings.subscribe(setText);
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{state.text}</Text>
+      <Text style={styles.title}></Text>
     </View>
   );
 }

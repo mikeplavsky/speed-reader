@@ -36,7 +36,6 @@ export default function TabTwoScreen() {
         value={state.text}
         onChangeText = {text => Settings.next({text})}
         multiline
-        disabled
       ></Input>
       
     </View>
