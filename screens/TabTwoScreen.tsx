@@ -16,8 +16,13 @@ export default function TabTwoScreen() {
     Settings.subscribe(setState);
   });
 
+  const txt = `
+      Sample text
+  for functionality testing  
+  `
+
   const getText = async () => {
-    const text = await Clipboard.getString();
+    const text = await Clipboard.getString() || txt;
     Settings.next({ text });
   }
 

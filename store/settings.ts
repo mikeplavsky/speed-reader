@@ -1,4 +1,4 @@
-import {BehaviorSubject} from 'rxjs'; 
+import {BehaviorSubject} from '@react-native-community/rxjs'; 
 
 const Settings = new BehaviorSubject({
     text: ""
