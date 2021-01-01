@@ -18,7 +18,11 @@ export default function TabTwoScreen() {
 
   const txt = `
       Sample text
-  for functionality testing  
+      for functionality testing  
+      When foxes start jumping
+      You'd better run 
+      When wolves are coming
+      You'd better hide
   `
 
   const getText = async () => {
