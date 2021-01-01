@@ -1,14 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
-import Navigation from './navigation';
 
-import {ThemeProvider} from "react-native-elements";
+import TabOneScreen from './screens/TabOneScreen';
 
 export default function App() {
+
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
 
@@ -17,7 +16,7 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
-          <Navigation colorScheme={colorScheme} />
+        <TabOneScreen></TabOneScreen>
       </SafeAreaProvider>
     );
   }
