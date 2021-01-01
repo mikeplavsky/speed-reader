@@ -48,10 +48,9 @@ export default function TabOneScreen() {
 
   }, []);
   
-  const nextWord = () => {
-    setCurrIndex( (idx) => {
-      return idx + 1;
-   })}
+  const nextWord = () => { 
+    setCurrIndex( idx => idx + 1 ); 
+  }
      
   const startReading = () => {
     $start.next(true);
@@ -78,6 +77,22 @@ export default function TabOneScreen() {
     startReading();
 
   }
+  
+  const getText = () => {
+
+    let i = idx; 
+
+    if (words.length && i === words.length) {
+
+      pauseReading();
+
+      i = words.length - 1; 
+      setCurrIndex(i);
+
+    }
+
+    return words[i] ;
+  }
     
   return (
 
@@ -97,7 +112,7 @@ export default function TabOneScreen() {
       }}
     
     >
-      <Text style={styles.title}>{words[idx]}</Text>
+      <Text style={styles.title}>{ getText() }</Text>
       
     </View>
   );
