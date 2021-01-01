@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Clipboard, TouchableHighlight } from 'react-native';
 import {Text, Button} from 'react-native-elements';
 
 import {interval, BehaviorSubject, empty} from '@react-native-community/rxjs';
@@ -13,16 +13,16 @@ export default function TabOneScreen() {
   const [words, setWords] = React.useState([""]);
   const [idx, setCurrIndex] = React.useState(0);
 
+  const [width,setWidth] = React.useState(0);
+
   const [$start,] = React.useState(new BehaviorSubject(false));
+
   const [$tick,] = React.useState($start.pipe(
     switchMap( (x) => {
-    console.log(`Start: ${x}`);
     return x ? interval(185) : empty();
   })));
 
   React.useEffect(() => {
-
-    console.log('use effect');
 
     Settings.subscribe((data) => {
 
@@ -43,7 +43,6 @@ export default function TabOneScreen() {
     });
 
     $tick.subscribe((x) => {
-        console.log(`reading: ${x}`);
         nextWord();
       });
 
@@ -51,12 +50,7 @@ export default function TabOneScreen() {
   
   const nextWord = () => {
     setCurrIndex( (idx) => {
-
-      //if (words.length === 0 ) { return 0; } 
-      //if (idx == words.length - 1) { return idx}
-
       return idx + 1;
-
    })}
      
   const startReading = () => {
@@ -66,22 +60,45 @@ export default function TabOneScreen() {
   const pauseReading = () => {
     $start.next(false);
   } 
+  
+  const txt = `
+      Sample text
+      for functionality testing  
+      When foxes start jumping
+      You'd better run 
+      When wolves are coming
+      You'd better hide
+  `
+
+  const getClipboardText = async () => {
+
+    const text = await Clipboard.getString() || txt;
+    Settings.next({ text });
+
+    startReading();
+
+  }
     
   return (
-    <View style={styles.container}>
+
+    <View style={styles.container} 
+
+      onLayout = {(x) => {
+        setWidth(x.nativeEvent.layout.width);
+      }}
+
+      onTouchEnd = {(x) => {
+
+        const left = x.nativeEvent.locationX < width/2;
+
+        if (!left) { $start.next( ! $start.value); }
+        else { getClipboardText(); }
+
+      }}
+    
+    >
       <Text style={styles.title}>{words[idx]}</Text>
-      <Button 
-        title='Next'
-        type='clear'
-        onPress={nextWord}></Button>
-      <Button 
-        title='Start'
-        type='clear'
-        onPress={startReading}></Button>
-      <Button 
-        title='Pause'
-        type='clear'
-        onPress={pauseReading}></Button>
+      
     </View>
   );
 }
@@ -91,14 +108,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'black',
   },
   title: {
     fontSize: 50,
     color: 'white'
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
   },
 });
