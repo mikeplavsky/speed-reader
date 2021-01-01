@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Clipboard, TouchableHighlight } from 'react-native';
+import { StyleSheet, Clipboard, AppState } from 'react-native';
 import {Text, Button} from 'react-native-elements';
 
 import {interval, BehaviorSubject, empty} from '@react-native-community/rxjs';
@@ -7,13 +7,12 @@ import {filter, switchMap, startWith} from '@react-native-community/rxjs/operato
 
 import {View } from '../components/Themed';
 import Settings from '../store/settings';
+import App from '../App';
 
 export default function TabOneScreen() {
 
   const [words, setWords] = React.useState([""]);
   const [idx, setCurrIndex] = React.useState(0);
-
-  const [width,setWidth] = React.useState(0);
 
   const [$start,] = React.useState(new BehaviorSubject(false));
 
@@ -23,6 +22,12 @@ export default function TabOneScreen() {
   })));
 
   React.useEffect(() => {
+
+    AppState.addEventListener("change", (x) => {
+      if (x == 'active') { 
+        getClipboardText(); 
+      }
+    });
 
     Settings.subscribe((data) => {
 
@@ -74,8 +79,6 @@ export default function TabOneScreen() {
     const text = await Clipboard.getString() || txt;
     Settings.next({ text });
 
-    startReading();
-
   }
   
   const getText = () => {
@@ -97,24 +100,21 @@ export default function TabOneScreen() {
   return (
 
     <View style={styles.container} 
+      onTouchEnd = { x => {
 
-      onLayout = {(x) => {
-        setWidth(x.nativeEvent.layout.width);
-      }}
+        const start = ! $start.value;
 
-      onTouchEnd = {(x) => {
+        if (start && idx === words.length - 1) {
+          setCurrIndex(0);
+        }
 
-        const left = x.nativeEvent.locationX < width/2;
-
-        if (!left) { $start.next( ! $start.value); }
-        else { getClipboardText(); }
+        $start.next(start); 
 
       }}
-    
     >
       <Text style={styles.title}>{ getText() }</Text>
-      
     </View>
+
   );
 }
 
