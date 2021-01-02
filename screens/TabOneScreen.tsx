@@ -6,12 +6,11 @@ import {interval, BehaviorSubject, empty} from '@react-native-community/rxjs';
 import {filter, switchMap, startWith} from '@react-native-community/rxjs/operators';
 
 import {View } from '../components/Themed';
-import Settings from '../store/settings';
 import App from '../App';
 
 export default function TabOneScreen() {
 
-  const [words, setWords] = React.useState([""]);
+  const [words, setWords] = React.useState([]);
   const [idx, setCurrIndex] = React.useState(0);
 
   const [$start,] = React.useState(new BehaviorSubject(false));
@@ -29,27 +28,9 @@ export default function TabOneScreen() {
       }
     });
 
-    Settings.subscribe((data) => {
-
-      setWords(prevWords => {
-
-        if (data.text.length === 0 ) { return prevWords; }
-
-        let words = data.text.split(/[\s]+/);
-        words = words.filter( x => x.length );
-
-        return words;
-
-      });
-
-      setCurrIndex(0);
-      $start.next(false);
-
-    });
-
     $tick.subscribe((x) => {
         nextWord();
-      });
+    });
 
   }, []);
   
@@ -66,18 +47,29 @@ export default function TabOneScreen() {
   } 
   
   const txt = `
-      Sample text
-      for functionality testing  
-      When foxes start jumping
-      You'd better run 
-      When wolves are coming
-      You'd better hide
+    If something is in the clipboard
+    It is pasted here. 
+    If there is nothing 
+    Then this text is on the screen
   `
 
-  const getClipboardText = async () => {
+  const getClipboardText = async (start = false) => {
 
     const text = await Clipboard.getString() || txt;
-    Settings.next({ text });
+
+    setWords(prevWords => {
+
+      if (text.length === 0 ) { return prevWords; }
+
+      let words = text.split(/[\s]+/);
+      words = words.filter( x => x.length );
+
+      return words;
+
+    });
+
+    setCurrIndex(0);
+    $start.next(start);
 
   }
   
@@ -106,6 +98,10 @@ export default function TabOneScreen() {
 
         if (start && idx === words.length - 1) {
           setCurrIndex(0);
+        }
+
+        if (start && !words.length) { 
+          getClipboardText(start); 
         }
 
         $start.next(start); 
