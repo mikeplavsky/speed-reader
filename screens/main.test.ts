@@ -1,15 +1,8 @@
-import {render, unmountComponentAtNode} from 'react-dom';
-import {act} from 'react-dom/test-utils';
+import renderer from 'react-test-renderer';
 
-let container = null;
-
-beforeEach(() => {
-    container = document.createElement('<div>');
-});
-
-
-it ("can render", () => {
-    act(() => {
-        render("<TabOneScreen/>");
-    });
+describe("App", () => {
+    it ("renders", () => {
+       const tree = renderer.create('<App1/>').toJSON(); 
+       console.log(tree);
+    })
 });
