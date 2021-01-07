@@ -22,11 +22,13 @@ export default function TabOneScreen() {
 
   React.useEffect(() => {
 
-    AppState.addEventListener("change", (x) => {
+    const stateChange =  (x) => {
       if (x == 'active') { 
         getClipboardText(); 
       }
-    });
+    };
+
+    AppState.addEventListener("change", stateChange); 
 
     $tick.subscribe((x) => {
         nextWord();
@@ -45,16 +47,15 @@ export default function TabOneScreen() {
   const pauseReading = () => {
     $start.next(false);
   } 
-  
-  const txt = `
-    If something is in the clipboard
-    It is pasted here. 
-    If there is nothing 
-    Then this text is on the screen
-  `
 
   const getClipboardText = async (start = false) => {
 
+    const txt = `
+      If something is in the clipboard
+      It is pasted here. 
+      If there is nothing 
+      Then this text is on the screen
+    `
     const text = await Clipboard.getString() || txt;
 
     setWords(prevWords => {
