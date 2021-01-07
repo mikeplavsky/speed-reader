@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App renders 1`] = `
+<View
+  onTouchEnd={[Function]}
+  style={
+    Array [
+      Object {
+        "backgroundColor": "#fff",
+      },
+      Object {
+        "alignItems": "center",
+        "backgroundColor": "black",
+        "flex": 1,
+        "justifyContent": "center",
+      },
+    ]
+  }
+>
+  <Text
+    style={
+      Object {
+        "color": "white",
+        "fontSize": 50,
+      }
+    }
+  >
+    
+  </Text>
+</View>
+`;

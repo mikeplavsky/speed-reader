@@ -6,7 +6,15 @@ import TabOneScreen from '../screens/TabOneScreen';
 describe("App", () => {
 
     it ("renders", () => {
-       const tree = TestRenderer.create(<TabOneScreen />); 
+
+        const AppState = {
+            addEventListener() {}
+        };    
+
+        const tree = TestRenderer.create(
+            <TabOneScreen AppState={AppState}/>); 
+
+        expect(tree).toMatchSnapshot(); 
     })
 
 });

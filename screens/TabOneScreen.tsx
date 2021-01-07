@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Clipboard, AppState } from 'react-native';
+import { StyleSheet, Clipboard, AppState as AppStateProp} from 'react-native';
 import {Text, Button} from 'react-native-elements';
 
 import {interval, BehaviorSubject, empty} from '@react-native-community/rxjs';
@@ -8,7 +8,7 @@ import {filter, switchMap, startWith} from '@react-native-community/rxjs/operato
 import {View } from '../components/Themed';
 import App from '../App';
 
-export default function TabOneScreen() {
+export default function TabOneScreen({AppState=AppStateProp}) {
 
   const [words, setWords] = React.useState([]);
   const [idx, setCurrIndex] = React.useState(0);
