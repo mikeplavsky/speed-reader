@@ -1,26 +1,37 @@
+import {useState, useEffect} from 'react';
 import * as React from 'react';
-import { StyleSheet, Clipboard, AppState as AppStateProp} from 'react-native';
+import {StyleSheet, Clipboard, AppState as AppStateProp} from 'react-native';
 import {Text, Button} from 'react-native-elements';
 
 import {interval, BehaviorSubject, empty} from '@react-native-community/rxjs';
-import {filter, switchMap, startWith} from '@react-native-community/rxjs/operators';
+import {switchMap} from '@react-native-community/rxjs/operators';
 
-import {View } from '../components/Themed';
+import {View} from '../components/Themed';
 import App from '../App';
 
 export default function TabOneScreen({AppState=AppStateProp}) {
 
-  const [words, setWords] = React.useState([]);
-  const [idx, setCurrIndex] = React.useState(0);
+  const [words, setWords] = useState([]);
+  const [idx, setCurrIndex] = useState(0);
 
-  const [$start,] = React.useState(new BehaviorSubject(false));
+  const [$start,] = useState(new BehaviorSubject(false));
 
-  const [$tick,] = React.useState($start.pipe(
+  const [$tick,] = useState($start.pipe(
     switchMap( (x) => {
     return x ? interval(185) : empty();
   })));
 
-  React.useEffect(() => {
+  useEffect( () => {
+
+    const s = $tick.subscribe((x) => {
+        nextWord();
+    });
+
+    return () => s.unsubscribe(); 
+
+  }, []);
+
+  useEffect(() => {
 
     const stateChange =  (x) => {
       if (x == 'active') { 
@@ -29,10 +40,7 @@ export default function TabOneScreen({AppState=AppStateProp}) {
     };
 
     AppState.addEventListener("change", stateChange); 
-
-    $tick.subscribe((x) => {
-        nextWord();
-    });
+    return () => AppState.removeEventListener("change", stateChange);
 
   }, []);
   
