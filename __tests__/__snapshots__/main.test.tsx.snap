@@ -29,3 +29,33 @@ exports[`App renders 1`] = `
   </Text>
 </View>
 `;
+
+exports[`App renders text 1`] = `
+<View
+  onTouchEnd={[Function]}
+  style={
+    Array [
+      Object {
+        "backgroundColor": "#fff",
+      },
+      Object {
+        "alignItems": "center",
+        "backgroundColor": "black",
+        "flex": 1,
+        "justifyContent": "center",
+      },
+    ]
+  }
+>
+  <Text
+    style={
+      Object {
+        "color": "white",
+        "fontSize": 50,
+      }
+    }
+  >
+    If
+  </Text>
+</View>
+`;

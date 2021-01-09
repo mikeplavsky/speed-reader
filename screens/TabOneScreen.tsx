@@ -1,6 +1,6 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import * as React from 'react';
-import {StyleSheet, Clipboard, AppState as AppStateProp} from 'react-native';
+import {StyleSheet, Clipboard, AppState} from 'react-native';
 import {Text, Button} from 'react-native-elements';
 
 import {interval, BehaviorSubject, empty} from '@react-native-community/rxjs';
@@ -9,27 +9,56 @@ import {switchMap} from '@react-native-community/rxjs/operators';
 import {View} from '../components/Themed';
 import App from '../App';
 
-export default function TabOneScreen({AppState=AppStateProp}) {
-
+function useClipboard() {
+  
   const [words, setWords] = useState([]);
   const [idx, setCurrIndex] = useState(0);
+  const [text, setText] = useState('');
 
-  const [$start,] = useState(new BehaviorSubject(false));
+  const [reading, setReading] = useState(false);
+  const id = useRef(0);
 
-  const [$tick,] = useState($start.pipe(
-    switchMap( (x) => {
-    return x ? interval(185) : empty();
-  })));
+  useEffect(() => {
 
-  useEffect( () => {
+    if (reading) {
 
-    const s = $tick.subscribe((x) => {
-        nextWord();
-    });
+      if (idx == words.length - 1) {
+        setCurrIndex(0);
+      } 
 
-    return () => s.unsubscribe(); 
+      id.current = setInterval(nextWord,185);
 
-  }, []);
+    } 
+    else {
+      clearInterval(id.current); 
+    }
+
+  },[reading]);
+
+  useEffect(() => {
+
+    setText(words[0]);
+
+    setReading(false);
+    setCurrIndex(0);
+
+  }, [words]);
+
+  useEffect(() => {
+
+    const l = words.length;
+
+    if (idx >= l) {
+
+      setReading(false);
+      setCurrIndex(l == 0 ? 0 : l - 1);
+
+      return;
+    }
+
+    setText(words[idx]);
+
+  }, [idx]);
 
   useEffect(() => {
 
@@ -45,79 +74,52 @@ export default function TabOneScreen({AppState=AppStateProp}) {
   }, []);
   
   const nextWord = () => { 
-    setCurrIndex( idx => idx + 1 ); 
+
+    setCurrIndex( idx => {
+      return idx + 1; 
+    }); 
+
   }
      
-  const startReading = () => {
-    $start.next(true);
-  } 
-  
-  const pauseReading = () => {
-    $start.next(false);
-  } 
+  const getClipboardText = async () => {
 
-  const getClipboardText = async (start = false) => {
-
-    const txt = `
-      If something is in the clipboard
-      It is pasted here. 
-      If there is nothing 
-      Then this text is on the screen
-    `
-    const text = await Clipboard.getString() || txt;
+    const data = await Clipboard.getString();
 
     setWords(prevWords => {
 
-      if (text.length === 0 ) { return prevWords; }
+      if (data.length === 0 ) { return prevWords; }
 
-      let words = text.split(/[\s]+/);
+      let words = data.split(/[\s]+/);
       words = words.filter( x => x.length );
-
+      
       return words;
 
     });
 
-    setCurrIndex(0);
-    $start.next(start);
+  }
+
+  const toggleIt = () => {
+
+      setReading( (wasReading) => {
+        return !wasReading;
+      });
 
   }
-  
-  const getText = () => {
 
-    let i = idx; 
+  return [text, toggleIt];
 
-    if (words.length && i === words.length) {
+}
 
-      pauseReading();
+export default function TabOneScreen() {
 
-      i = words.length - 1; 
-      setCurrIndex(i);
-
-    }
-
-    return words[i] ;
-  }
+  const [text, toggleIt] = useClipboard();
     
   return (
 
     <View style={styles.container} 
-      onTouchEnd = { x => {
-
-        const start = ! $start.value;
-
-        if (start && idx === words.length - 1) {
-          setCurrIndex(0);
-        }
-
-        if (start && !words.length) { 
-          getClipboardText(start); 
-        }
-
-        $start.next(start); 
-
-      }}
+      onTouchEnd = {toggleIt}
     >
-      <Text style={styles.title}>{ getText() }</Text>
+      <Text style={styles.title}>{text}</Text>
     </View>
 
   );

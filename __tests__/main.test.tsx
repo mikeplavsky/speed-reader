@@ -1,12 +1,16 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
+import {timer} from '@react-native-community/rxjs';
+
+const { act } = TestRenderer;
 
 import TabOneScreen from '../screens/TabOneScreen';
 
 describe("App", () => {
 
     const AppState = {
-        addEventListener() {}
+        addEventListener() {},
+        removeEventListener() {}
     };    
 
     it ("renders", () => {
@@ -17,14 +21,22 @@ describe("App", () => {
         expect(tree).toMatchSnapshot(); 
     });
 
-    it ("renders text", () => {
+    it ("renders text", async () => {
+
+        const Clipboard = {};
 
         const tree = TestRenderer.create(
-            <TabOneScreen AppState={AppState}/>); 
+                <TabOneScreen 
+                    AppState={AppState}
+                    Clipboard={Clipboard}/>); 
 
-        const scr = tree.root.findByType(TabOneScreen);
-        console.log(scr.props);
-        console.log(scr.state);
+        act(() => {
+            tree.root.children[0].props.onTouchEnd();
+        }); 
+
+        const t = await timer(1000);
+
+        expect(tree).toMatchSnapshot(); 
 
     })
 
