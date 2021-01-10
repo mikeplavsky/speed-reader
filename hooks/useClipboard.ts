@@ -5,7 +5,25 @@ import {Clipboard, AppState} from 'react-native';
 
 export default function useClipboard() {
   
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+
+    setWords(prevWords => {
+
+      if (data.length === 0 ) { return prevWords; }
+
+      let words = data.split(/[\s]+/);
+      words = words.filter( x => x.length );
+      
+      return words;
+
+    });
+
+  },[data]);  
+
   const [words, setWords] = useState([]);
+
   const [idx, setCurrIndex] = useState(0);
   const [text, setText] = useState('');
 
@@ -56,12 +74,14 @@ export default function useClipboard() {
   useEffect(() => {
 
     const stateChange =  (x) => {
+
       if (x == 'active') { 
         getClipboardText(); 
       }
       else {
         setReading(false);
       }
+
     };
 
     AppState.addEventListener("change", stateChange); 
@@ -80,17 +100,7 @@ export default function useClipboard() {
   const getClipboardText = async () => {
 
     const data = await Clipboard.getString();
-
-    setWords(prevWords => {
-
-      if (data.length === 0 ) { return prevWords; }
-
-      let words = data.split(/[\s]+/);
-      words = words.filter( x => x.length );
-      
-      return words;
-
-    });
+    setData(data);
 
   }
 
