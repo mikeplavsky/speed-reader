@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`App renders 1`] = `
+exports[`TabOnceScreen renders text 1`] = `
 <View
-  onTouchEnd={[Function]}
+  onTouchEnd="toggleItOnce"
   style={
     Array [
       Object {
@@ -25,14 +25,14 @@ exports[`App renders 1`] = `
       }
     }
   >
-    
+    Once
   </Text>
 </View>
 `;
 
-exports[`App renders text 1`] = `
+exports[`TabOnceScreen renders text 2`] = `
 <View
-  onTouchEnd={[Function]}
+  onTouchEnd="toggleItTwice"
   style={
     Array [
       Object {
@@ -55,7 +55,7 @@ exports[`App renders text 1`] = `
       }
     }
   >
-    If
+    Twice
   </Text>
 </View>
 `;

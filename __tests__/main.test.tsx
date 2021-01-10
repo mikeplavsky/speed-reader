@@ -1,43 +1,30 @@
 import React from 'react';
-import TestRenderer from 'react-test-renderer';
+import {create} from 'react-test-renderer';
 import {timer} from '@react-native-community/rxjs';
 
-const { act } = TestRenderer;
+jest.mock('../hooks/useClipboard');
 
+import useClipboard from "../hooks/useClipboard";
 import TabOneScreen from '../screens/TabOneScreen';
 
-describe("App", () => {
+afterAll(() => jest.unmock('../hooks/useClipboard'));
 
-    const AppState = {
-        addEventListener() {},
-        removeEventListener() {}
-    };    
+describe("TabOnceScreen", () => {
 
-    it ("renders", () => {
+    it ("renders text", () => {
+        
+        useClipboard.mockImplementation(
+            () => ["Once", "toggleItOnce"]);
 
-        const tree = TestRenderer.create(
-            <TabOneScreen AppState={AppState}/>); 
+        expect(create( <TabOneScreen />)) 
+            .toMatchSnapshot(); 
 
-        expect(tree).toMatchSnapshot(); 
+        useClipboard.mockImplementation(
+            () => ["Twice", "toggleItTwice"]);
+
+        expect(create( <TabOneScreen />)) 
+            .toMatchSnapshot(); 
+
     });
-
-    it ("renders text", async () => {
-
-        const Clipboard = {};
-
-        const tree = TestRenderer.create(
-                <TabOneScreen 
-                    AppState={AppState}
-                    Clipboard={Clipboard}/>); 
-
-        act(() => {
-            tree.root.children[0].props.onTouchEnd();
-        }); 
-
-        const t = await timer(1000);
-
-        expect(tree).toMatchSnapshot(); 
-
-    })
 
 });
