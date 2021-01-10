@@ -1,117 +1,139 @@
 
-import {useState, useEffect, useRef} from 'react';
+import {useEffect, useReducer} from 'react';
 import * as React from 'react';
 import {Clipboard, AppState} from 'react-native';
 
-export default function useClipboard() {
-  
-  const [data, setData] = useState([]);
+export function wordsReducer(state, action) {
 
-  useEffect(() => {
+    switch (action.type) {
 
-    setWords(prevWords => {
+        case "NEXT": 
 
-      if (data.length === 0 ) { return prevWords; }
+            const l = state.words.length;
 
-      let words = data.split(/[\s]+/);
-      words = words.filter( x => x.length );
-      
-      return words;
+            let idx = state.idx + 1;
+            let reading = true; 
 
-    });
+            if (idx >= l) {
 
-  },[data]);  
+                reading = false;
+                idx = l == 0 ? 0 : l - 1;
 
-  const [words, setWords] = useState([]);
+            }
 
-  const [idx, setCurrIndex] = useState(0);
-  const [text, setText] = useState('');
+            let text = state.words[idx];
 
-  const [reading, setReading] = useState(false);
-  const id = useRef(0);
+            return {
+                ...state,
+                reading,
+                idx,
+                text
+            };
 
-  useEffect(() => {
+        case "TOGGLE":
 
-    if (reading) {
+            reading = ! state.reading;
+            idx = state.idx;
 
-      if (idx == words.length - 1) {
-        setCurrIndex(0);
-      } 
+            if (idx === state.words.length - 1 && reading) {
+                idx = 0;
+            }
 
-      id.current = setInterval(nextWord,185);
+            text = state.words[idx];
 
-    } 
+            return {
+                ...state,
+                reading,
+                idx,
+                text
+            };
 
-    return () => {clearInterval(id.current);}; 
+        case "PAUSE":
 
-  },[reading]);
+            return {
+                ...state,
+                reading: false
+            };
 
-  useEffect(() => {
+        case "DATA":
 
-    setText(words[0]);
+            if (action.data == state.data) {
+                return state;
+            }
 
-    setReading(false);
-    setCurrIndex(0);
+            let data = action.data;
 
-  }, [words]);
+            let words = data.split(/[\s]+/);
+            words = words.filter( x => x.length );
+            text = words[0];
 
-  useEffect(() => {
-
-    const l = words.length;
-
-    if (idx >= l) {
-
-      setReading(false);
-      setCurrIndex(l == 0 ? 0 : l - 1);
-
-      return;
+            return {
+                data,
+                words,
+                idx: 0,
+                text,
+                reading: false
+            };
     }
 
-    setText(words[idx]);
+    return state;
+}
 
-  }, [idx]);
+export default function useClipboard() {
+   
+    const [state, dispatch] = useReducer(
+        wordsReducer,{
+            data: '',
+            words: [],
+            idx: 0,
+            text: '',
+            reading: false
+        });   
+    
+    useEffect(() => {
 
-  useEffect(() => {
+        if (state.reading) {
 
-    const stateChange =  (x) => {
+            id = setInterval(
+                () => dispatch({type: "NEXT"}),185);
 
-      if (x == 'active') { 
+            return () => clearInterval(id);
+        } 
+
+    },[state.reading]);
+
+    useEffect(() => {
+        
         getClipboardText(); 
-      }
-      else {
-        setReading(false);
-      }
 
-    };
+        const stateChange = (x) => {
 
-    AppState.addEventListener("change", stateChange); 
-    return () => AppState.removeEventListener("change", stateChange);
+            if (x == 'active') { 
+                getClipboardText(); 
+            }
+            else {
+                dispatch({type: "PAUSE"});
+            }
 
-  }, []);
+        };
+
+        AppState.addEventListener("change", stateChange); 
+        return () => AppState.removeEventListener("change", stateChange);
+
+    }, []);
   
-  const nextWord = () => { 
-
-    setCurrIndex( idx => {
-      return idx + 1; 
-    }); 
-
-  }
      
-  const getClipboardText = async () => {
+    const getClipboardText = async () => {
 
-    const data = await Clipboard.getString();
-    setData(data);
+        const data = await Clipboard.getString();
+        dispatch({type: "DATA", data});
 
-  }
+    }
 
-  const toggleIt = () => {
+    const toggleIt = () => {
+        dispatch({type: "TOGGLE"});
+    }
 
-      setReading( (wasReading) => {
-        return !wasReading;
-      });
-
-  }
-
-  return [text, toggleIt];
+    return [state.text, toggleIt];
 
 }
