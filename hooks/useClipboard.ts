@@ -121,7 +121,6 @@ export default function useClipboard() {
         return () => AppState.removeEventListener("change", stateChange);
 
     }, []);
-  
      
     const getClipboardText = async () => {
 
@@ -130,10 +129,8 @@ export default function useClipboard() {
 
     }
 
-    const toggleIt = () => {
-        dispatch({type: "TOGGLE"});
-    }
-
-    return [state.text, toggleIt];
+    return [
+        state.text, 
+        () => dispatch({type: "TOGGLE"})];
 
 }
