@@ -57,13 +57,14 @@ export function wordsReducer(state, action) {
 
         case "DATA":
 
-            if (action.data == state.data) {
+            if ( ! (action.data && action.data.length) || 
+                    action.data === state.data) {
                 return state;
             }
 
             let data = action.data;
 
-            let words = data.split(/[\s]+/);
+            let words = data.split(/[\s,\.“”"\-]+/);
             words = words.filter( x => x.length );
             text = words[0];
 

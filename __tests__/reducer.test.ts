@@ -102,6 +102,28 @@ test("it pauses reading", () => {
   expect(res).toStrictEqual({ reading: false });
 });
 
+test.each(["", null, undefined])(
+  "it does not processes data if action data is empty: %s",
+  (d) => {
+    const data = " next string comes first";
+
+    const res = wordsReducer(
+      { data, taint: 12 },
+      {
+        type: "DATA",
+        data: d,
+      }
+    );
+
+    expect(res).toMatchInlineSnapshot(`
+          Object {
+            "data": " next string comes first",
+            "taint": 12,
+          }
+      `);
+  }
+);
+
 test("it does not processes data if it is the same", () => {
   const data = " next string comes first";
 
@@ -121,9 +143,47 @@ test("it does not processes data if it is the same", () => {
   `);
 });
 
-test("it processes data", () => {
-  const data = " next string comes first";
+test.each(["answered “yes,” some likely watched the most-popular"])(
+  "it processes quotes in data",
+  (data) => {
+    const res = wordsReducer(
+      {},
+      {
+        type: "DATA",
+        data,
+      }
+    );
 
+    expect(res).toMatchInlineSnapshot(`
+      Object {
+        "data": "answered “yes,” some likely watched the most-popular",
+        "idx": 0,
+        "reading": false,
+        "text": "answered",
+        "words": Array [
+          "answered",
+          "yes",
+          "some",
+          "likely",
+          "watched",
+          "the",
+          "most",
+          "popular",
+        ],
+      }
+    `);
+  }
+);
+
+test.each([
+  "next string comes first",
+  " next string comes first",
+  " next        string    comes first      ",
+  " next- string comes-first ",
+  " - next -string    comes-first -",
+  " - next, -string. comes-first -",
+  " - next, ----string.,.. comes,-,,,first -",
+])("it processes data: %s", (data) => {
   const res = wordsReducer(
     {},
     {
@@ -134,7 +194,7 @@ test("it processes data", () => {
 
   expect(res).toMatchInlineSnapshot(`
     Object {
-      "data": " next string comes first",
+      "data": "${data}",
       "idx": 0,
       "reading": false,
       "text": "next",
