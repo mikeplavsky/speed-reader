@@ -65,7 +65,8 @@ export function wordsReducer(state, action) {
             let data = action.data;
 
             let words = data.split(/[\s,\.“”"\-\:]+/);
-            words = words.filter( x => x.length );
+            words = words.filter( 
+                x => x.length && !/^The$|^A$/i.test(x) );
             text = words[0];
 
             return {
