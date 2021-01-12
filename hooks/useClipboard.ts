@@ -64,7 +64,7 @@ export function wordsReducer(state, action) {
 
             let data = action.data;
 
-            let words = data.split(/[\s,\.“”"\-]+/);
+            let words = data.split(/[\s,\.“”"\-\:]+/);
             words = words.filter( x => x.length );
             text = words[0];
 

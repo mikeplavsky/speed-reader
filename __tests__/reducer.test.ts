@@ -143,8 +143,11 @@ test("it does not processes data if it is the same", () => {
   `);
 });
 
-test.each(["answered “yes,” some likely watched the most-popular"])(
-  "it processes quotes in data",
+test.each([
+    "answered “yes,” some likely watched the most-popular",
+    "answered “yes,” some: likely : watched the: most-popular",
+    ])(
+  "it processes quotes and colons in data: %s",
   (data) => {
     const res = wordsReducer(
       {},
@@ -156,7 +159,7 @@ test.each(["answered “yes,” some likely watched the most-popular"])(
 
     expect(res).toMatchInlineSnapshot(`
       Object {
-        "data": "answered “yes,” some likely watched the most-popular",
+        "data": "${data}",
         "idx": 0,
         "reading": false,
         "text": "answered",
