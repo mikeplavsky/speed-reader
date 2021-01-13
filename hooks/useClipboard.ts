@@ -81,7 +81,9 @@ export function wordsReducer(state, action) {
     return state;
 }
 
-export default function useClipboard() {
+export default function useClipboard(
+    AppStateProp = AppState,
+    ClipboardProp = Clipboard) {
    
     const [state, dispatch] = useReducer(
         wordsReducer,{
@@ -119,14 +121,14 @@ export default function useClipboard() {
 
         };
 
-        AppState.addEventListener("change", stateChange); 
-        return () => AppState.removeEventListener("change", stateChange);
+        AppStateProp.addEventListener("change", stateChange); 
+        return () => AppStateProp.removeEventListener("change", stateChange);
 
     }, []);
      
     const getClipboardText = async () => {
 
-        const data = await Clipboard.getString();
+        const data = await ClipboardProp.getString();
         dispatch({type: "DATA", data});
 
     }

@@ -1,21 +1,39 @@
-import * as React from 'react';
+/**
+ * @jest-environment jsdom
+ */
+
+import * as React from "react";
 import {render,screen} from "@testing-library/react";
-import {useClipboard} from '../hooks/useClipboard';
+import useClipboard from '../hooks/useClipboard';
+import { Text } from "react-native";
 
-function setup() {
+const AState = {
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn()
+};
 
-    const retVal = {};
+const AClipboard = {
+    getString: jest.fn()
+};
 
-    function TestComponent() {
-        Object.assign(retVal, useClipboard())
-        return null; 
-    }
+function TestC () {
 
-    render(<TestComponent />);
-    return retVal;
+    const [text, toggleIt] = useClipboard(
+        AState,
+        AClipboard);
+
+    return <div>{text}</div>
 
 }
 
-test("it renders",() => {
-    //const res = setup();
+test("it hooks something",async () => {
+
+    AClipboard.getString.mockImplementation(
+        async () => "Here is a string" ); 
+
+    render(<TestC/>);
+    const txt = await screen.findByText("Here");
+
+    expect(txt.textContent).toBe("Here");    
+    
 });
