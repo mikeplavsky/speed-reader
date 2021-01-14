@@ -28,6 +28,38 @@ function TestC () {
 
 }
 
+beforeEach(() => {
+    AState.addEventListener.mockClear();
+    AState.removeEventListener.mockClear();
+});
+
+test("Switching state", async () => {
+
+    let stateChange = null; 
+
+    AState.addEventListener.mockImplementationOnce((x,func) => {
+        stateChange = func; 
+    });
+
+    AClipboard.getString.mockImplementationOnce(
+        async () => "Nice and Twice" ); 
+    
+    render(<TestC/>);
+
+    const txt = await screen.findByText("Nice");
+    expect(txt.textContent).toBe("Nice");    
+
+    AClipboard.getString.mockImplementationOnce(
+        async () => "Twice and Nice" ); 
+
+    await act(async () => {
+        await stateChange("active");
+    });
+
+    expect(txt.textContent).toBe("Twice");    
+    
+});
+
 test("AppState is used", () => {
 
     render(<TestC/>);
