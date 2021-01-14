@@ -3,7 +3,7 @@
  */
 
 import * as React from "react";
-import {render,screen,act} from "@testing-library/react";
+import {render,screen,act,cleanup} from "@testing-library/react";
 import useClipboard from '../hooks/useClipboard';
 import { Text } from "react-native";
 
@@ -27,6 +27,16 @@ function TestC () {
     return <div onClick={toggleIt}>{text}</div>
 
 }
+
+test("AppState is used", () => {
+
+    render(<TestC/>);
+    cleanup();
+
+    expect(AState.addEventListener).toBeCalledTimes(1);
+    expect(AState.removeEventListener).toBeCalledTimes(1);
+    
+});
 
 test("timer works",async () => {
 
