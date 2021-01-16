@@ -37,27 +37,44 @@ test("Switching state", async () => {
 
     let stateChange = null; 
 
-    AState.addEventListener.mockImplementationOnce((x,func) => {
+    AState.addEventListener.mockImplementation((x,func) => {
         stateChange = func; 
     });
 
-    AClipboard.getString.mockImplementationOnce(
-        async () => "Nice and Twice" ); 
+    const mockGetString = 
+        x => AClipboard.getString.mockImplementation(
+            () => x); 
+
+    const mockAppState = async (x) => {
+
+        await act(async () => {
+            await stateChange(x);
+        });
+
+    } 
+
+    mockGetString("Nice and Twice");
     
-    render(<TestC/>);
+    const c = render(<TestC/>);
 
     const txt = await screen.findByText("Nice");
     expect(txt.textContent).toBe("Nice");    
 
-    AClipboard.getString.mockImplementationOnce(
-        async () => "Twice and Nice" ); 
+    mockGetString("Next Text");
+    await mockAppState("active");
 
-    await act(async () => {
-        await stateChange("active");
-    });
+    expect(txt.textContent).toBe("Next");    
 
-    expect(txt.textContent).toBe("Twice");    
-    
+    mockGetString("Second Text");
+    await mockAppState("active");
+
+    expect(txt.textContent).toBe("Second");    
+
+    mockGetString("Third Text");
+    await mockAppState("background");
+
+    expect(txt.textContent).toBe("Second");    
+
 });
 
 test("AppState is used", () => {

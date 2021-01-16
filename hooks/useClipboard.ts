@@ -93,6 +93,13 @@ export default function useClipboard(
             text: '',
             reading: false
         });   
+
+    const mounted = React.useRef(false);
+
+    useEffect(() => {
+        mounted.current = true;
+        return () => mounted.current = false;
+    });
     
     useEffect(() => {
 
@@ -106,8 +113,8 @@ export default function useClipboard(
 
     },[state.reading]);
 
-    useEffect(() => {
-        
+    useEffect( () => {
+
         getClipboardText(); 
 
         const stateChange = (x) => {
@@ -129,7 +136,10 @@ export default function useClipboard(
     const getClipboardText = async () => {
 
         const data = await ClipboardProp.getString();
-        dispatch({type: "DATA", data});
+
+        if (mounted.current) {
+            dispatch({type: "DATA", data});
+        }
 
     }
 
