@@ -9,12 +9,50 @@ import useClipboard from '../hooks/useClipboard';
 
 export default function TabOneScreen() {
 
-  const [text, toggleIt] = useClipboard();
+  const [text, toggleIt, prevWord, nextWord] = useClipboard();
+  const [size, setSize] = React.useState({height:0,width:0});
+
+  const touchEnd = (
+    {nativeEvent:{locationX,locationY}},
+    {width,height}) => {
+
+    const left = locationX < width / 2;
+
+    if (locationY > height * 2/3) {
+      toggleIt();
+    }
+    else if ( locationY > height/2 && 
+      locationY < height * 2/3) {
+
+        if (left) {
+          prevWord();
+        }
+        else {
+          nextWord();
+        }
+
+    }
+    else {
+      if (left) {
+        console.log("decreasing speed");
+      }
+      else {
+        console.log("increasing speed");
+      }
+    }
+
+  }
     
   return (
 
     <View style={styles.container} 
-      onTouchEnd = {toggleIt}
+      onLayout = {x => {
+        setSize({
+          height: x.nativeEvent.layout.height,
+          width: x.nativeEvent.layout.width
+        });
+      }}
+      onTouchEnd = {(x) => touchEnd(x,size)}
     >
       <Text style={styles.title}>{text}</Text>
     </View>

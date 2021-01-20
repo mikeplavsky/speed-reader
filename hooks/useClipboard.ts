@@ -7,12 +7,30 @@ export function wordsReducer(state, action) {
 
     switch (action.type) {
 
+        case "PREV": 
+
+            let idx = state.idx - 1;
+            let reading = state.reading; 
+
+            if (idx < 0) {
+                idx = 0; 
+            }
+
+            let text = state.words[idx];
+
+            return {
+                ...state,
+                reading,
+                idx,
+                text
+            };
+
         case "NEXT": 
 
             const l = state.words.length;
 
-            let idx = state.idx + 1;
-            let reading = true; 
+            idx = state.idx + 1;
+            reading = state.reading; 
 
             if (idx >= l) {
 
@@ -21,7 +39,7 @@ export function wordsReducer(state, action) {
 
             }
 
-            let text = state.words[idx];
+            text = state.words[idx];
 
             return {
                 ...state,
@@ -145,6 +163,9 @@ export default function useClipboard(
 
     return [
         state.text, 
-        () => dispatch({type: "TOGGLE"})];
+        () => dispatch({type: "TOGGLE"}),
+        () => dispatch({type: "PREV"}),
+        () => dispatch({type: "NEXT"}),
+    ];
 
 }

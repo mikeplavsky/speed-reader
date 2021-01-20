@@ -11,6 +11,7 @@ test("getting next word", () => {
   const state = {
     words: ["one", "two", "three"],
     idx: 1,
+    reading: true
   };
 
   const res = wordsReducer(state, { type: "NEXT" });

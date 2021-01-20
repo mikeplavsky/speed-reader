@@ -2,7 +2,8 @@
 
 exports[`TabOnceScreen renders text 1`] = `
 <View
-  onTouchEnd="toggleItOnce"
+  onLayout={[Function]}
+  onTouchEnd={[Function]}
   style={
     Array [
       Object {
@@ -32,7 +33,8 @@ exports[`TabOnceScreen renders text 1`] = `
 
 exports[`TabOnceScreen renders text 2`] = `
 <View
-  onTouchEnd="toggleItTwice"
+  onLayout={[Function]}
+  onTouchEnd={[Function]}
   style={
     Array [
       Object {
