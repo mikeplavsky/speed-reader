@@ -16,29 +16,16 @@ export default function TabOneScreen() {
     {nativeEvent:{locationX,locationY}},
     {width,height}) => {
 
-    const left = locationX < width / 2;
-
-    if (locationY > height * 2/3) {
+    if (locationY > height/2 ) {
       toggleIt();
     }
-    else if ( locationY > height/2 && 
-      locationY < height * 2/3) {
-
-        if (left) {
+    else {
+        if (locationX < width/2) {
           prevWord();
         }
         else {
           nextWord();
         }
-
-    }
-    else {
-      if (left) {
-        console.log("decreasing speed");
-      }
-      else {
-        console.log("increasing speed");
-      }
     }
 
   }
